@@ -2,7 +2,7 @@
 resource "aws_iam_role" "application" {
   count = var.environment == "local" ? 0 : 1
 
-  name               = "${data.aws_region.current.name}-${var.application_name}-${var.environment}"
+  name               = "${data.aws_region.current.region}-${var.application_name}-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy[0].json
 
   lifecycle {
@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "application" {
     ]
 
     resources = [
-      "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+      "arn:aws:ssm:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"
     ]
   }
 
@@ -89,7 +89,7 @@ data "aws_iam_policy_document" "application" {
     ]
 
     resources = [
-      "arn:aws:sns:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+      "arn:aws:sns:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"
     ]
   }
 
@@ -99,29 +99,28 @@ data "aws_iam_policy_document" "application" {
     effect = "Allow"
 
     actions = [
-      "dynamoDB:BatchGetItem",
-      "dynamoDB:BatchWriteItem",
-      "dynamoDB:DeleteItem",
-      "dynamoDB:DescribeTable",
-      "dynamoDB:DescribeTimeToLive",
-      "dynamoDB:GetItem",
-      "dynamoDB:GetRecords",
-      "dynamoDB:GetShardIterator",
-      "dynamoDB:ListGlobalTables",
-      "dynamoDB:ListTables",
-      "dynamoDB:PartiQLDelete",
-      "dynamoDB:PartiQLInsert",
-      "dynamoDB:PartiQLSelect",
-      "dynamoDB:PartiQLUpdate",
-      "dynamoDB:PutItem",
-      "dynamoDB:Query",
-      "dynamoDB:Scan",
-      "dynamoDB:UpdateItem",
-      "dynamoDB:Scan",
+      "dynamodb:BatchGetItem",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:DescribeTable",
+      "dynamodb:DescribeTimeToLive",
+      "dynamodb:GetItem",
+      "dynamodb:GetRecords",
+      "dynamodb:GetShardIterator",
+      "dynamodb:ListGlobalTables",
+      "dynamodb:ListTables",
+      "dynamodb:PartiQLDelete",
+      "dynamodb:PartiQLInsert",
+      "dynamodb:PartiQLSelect",
+      "dynamodb:PartiQLUpdate",
+      "dynamodb:PutItem",
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:UpdateItem",
     ]
 
     resources = [
-      "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*",
+      "arn:aws:dynamodb:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*",
     ]
   }
 
@@ -141,7 +140,7 @@ data "aws_iam_policy_document" "application" {
     ]
 
     resources = [
-      "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+      "arn:aws:sqs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"
     ]
   }
 
