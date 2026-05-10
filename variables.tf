@@ -22,7 +22,7 @@ variable "processor_architecture" {
 
 variable "application_handler" {
   type        = string
-  default     = "handler"
+  default     = "bootstrap"
   description = "Application handler."
 }
 
@@ -45,7 +45,7 @@ variable "log_retention_in_days" {
 
 variable "lambda_timeout" {
   type        = number
-  default     = 120
+  default     = 30
   description = "Lambda timeout."
 }
 
@@ -75,7 +75,7 @@ variable "health_check_enabled" {
 
 variable "health_check_path" {
   type        = string
-  default     = "/"
+  default     = "/health"
   description = "Health Check path for the application resource."
 }
 
@@ -88,7 +88,7 @@ variable "health_check_threshold" {
 variable "events" {
   type        = list(string)
   default     = []
-  description = "List of events that the application emmits."
+  description = "List of events that the application emits."
 }
 
 variable "health_check_interval" {

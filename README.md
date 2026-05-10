@@ -9,7 +9,7 @@ Here's a code example of how you can use this module:
 ```hcl
 module "serverless" {
   source  = "app.terraform.io/<organization>/serverless/aws"
-  version = "~> 1"
+  version = "~> 0.0.1"
 
   application_name   = "serverless-boilerplate"
   environment        = "development"

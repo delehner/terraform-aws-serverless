@@ -1,6 +1,6 @@
 locals {
-  nonproduction_domain    = "${var.application_name}-${var.environment}.${var.application_domain}"
-  production_domain = "${var.application_name}.${var.application_domain}"
+  nonproduction_domain = "${var.application_name}-${var.environment}.${var.application_domain}"
+  production_domain    = "${var.application_name}.${var.application_domain}"
 }
 
 data "aws_route53_zone" "selected" {
@@ -37,10 +37,10 @@ resource "aws_route53_record" "application_without_health_check" {
   zone_id = data.aws_route53_zone.selected[0].zone_id
 
   latency_routing_policy {
-    region = data.aws_region.current.name
+    region = data.aws_region.current.region
   }
 
-  set_identifier = "${data.aws_region.current.name}-${var.application_name}-${var.environment}.${var.application_domain}"
+  set_identifier = "${data.aws_region.current.region}-${var.application_name}-${var.environment}.${var.application_domain}"
 
   alias {
     name                   = aws_apigatewayv2_domain_name.application[0].domain_name_configuration[0].target_domain_name
@@ -52,7 +52,7 @@ resource "aws_route53_record" "application_without_health_check" {
 resource "aws_route53_health_check" "application" {
   count = var.health_check_enabled && var.environment != "local" ? 1 : 0
 
-  fqdn              = "${aws_apigatewayv2_api.api[0].id}.execute-api.${data.aws_region.current.name}.amazonaws.com"
+  fqdn              = "${aws_apigatewayv2_api.api[0].id}.execute-api.${data.aws_region.current.region}.amazonaws.com"
   port              = 443
   type              = "HTTPS"
   resource_path     = var.health_check_path
@@ -69,10 +69,10 @@ resource "aws_route53_record" "application_with_health_check" {
   health_check_id = aws_route53_health_check.application[0].id
 
   latency_routing_policy {
-    region = data.aws_region.current.name
+    region = data.aws_region.current.region
   }
 
-  set_identifier = var.environment != "production" ? "${data.aws_region.current.name}-${local.nonproduction_domain}" : "${data.aws_region.current.name}-${local.production_domain}"
+  set_identifier = var.environment != "production" ? "${data.aws_region.current.region}-${local.nonproduction_domain}" : "${data.aws_region.current.region}-${local.production_domain}"
 
   alias {
     name                   = aws_apigatewayv2_domain_name.application[0].domain_name_configuration[0].target_domain_name
