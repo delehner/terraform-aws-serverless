@@ -1,11 +1,9 @@
 data "archive_file" "dummy" {
   type        = "zip"
-  output_path = "./tmp/dummy.zip"
+  output_path = "${path.module}/tmp/dummy-${var.application_name}-${var.environment}.zip"
   source {
-    content  = <<EOF
-    just a dummy content
-EOF
-    filename = "dummy.rs"
+    content  = "just a dummy content"
+    filename = "bootstrap"
   }
 }
 
