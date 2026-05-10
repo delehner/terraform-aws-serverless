@@ -30,7 +30,7 @@ resource "aws_apigatewayv2_domain_name" "application" {
 }
 
 resource "aws_route53_record" "application_without_health_check" {
-  count = var.health_check_enabled || var.environment == "local" ? 0 : 1
+  count = var.health_check_enabled || var.environment == "local" || !var.enable_custom_domain_route53_record ? 0 : 1
 
   name    = aws_apigatewayv2_domain_name.application[0].domain_name
   type    = "A"
@@ -61,7 +61,7 @@ resource "aws_route53_health_check" "application" {
 }
 
 resource "aws_route53_record" "application_with_health_check" {
-  count = var.health_check_enabled && var.environment != "local" ? 1 : 0
+  count = var.health_check_enabled && var.environment != "local" && var.enable_custom_domain_route53_record ? 1 : 0
 
   name            = aws_apigatewayv2_domain_name.application[0].domain_name
   type            = "A"

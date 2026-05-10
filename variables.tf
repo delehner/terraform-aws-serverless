@@ -96,3 +96,9 @@ variable "health_check_interval" {
   default     = "30"
   description = "Health Check interval for the application resource."
 }
+
+variable "enable_custom_domain_route53_record" {
+  type        = bool
+  default     = true
+  description = "Create the Route53 alias record (api-<env>.<domain> → API GW). Set false when a downstream module owns the public hostname (e.g. CloudFront-fronted edge) and the registry record would collide."
+}
