@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.0
+
+### Added
+- VPC feature flag. New inputs `vpc_subnet_ids` and `vpc_security_group_ids` (both default `[]`). When `vpc_subnet_ids` is non-empty, the Lambda is attached to the VPC (a `vpc_config` block) and the role gains `AWSLambdaVPCAccessExecutionRole` for ENI management. Empty (default) preserves the current non-VPC behaviour. Use it to reach VPC-only resources such as an RDS/Aurora cluster behind an RDS Proxy.
+
 ## v1.1.0
 
 ### Added
