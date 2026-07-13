@@ -38,6 +38,17 @@ resource "aws_iam_role_policy_attachment" "application" {
   policy_arn = aws_iam_policy.application[0].arn
 }
 
+# When the VPC feature flag is on, the Lambda needs to manage the ENIs it runs
+# on. AWSLambdaVPCAccessExecutionRole grants exactly ec2:*NetworkInterface* (+
+# logs). Attached only when vpc_subnet_ids is set, so non-VPC deployments keep
+# a minimal role.
+resource "aws_iam_role_policy_attachment" "vpc_access" {
+  count = var.environment == "local" ? 0 : (length(var.vpc_subnet_ids) > 0 ? 1 : 0)
+
+  role       = aws_iam_role.application[0].id
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 resource "aws_iam_policy" "application" {
   count = var.environment == "local" ? 0 : 1
 

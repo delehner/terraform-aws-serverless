@@ -29,6 +29,16 @@ resource "aws_lambda_function" "application" {
     }
   }
 
+  # Feature flag: attach the Lambda to a VPC only when subnets are provided.
+  # Empty (default) leaves the Lambda outside any VPC — unchanged behaviour.
+  dynamic "vpc_config" {
+    for_each = length(var.vpc_subnet_ids) > 0 ? [1] : []
+    content {
+      subnet_ids         = var.vpc_subnet_ids
+      security_group_ids = var.vpc_security_group_ids
+    }
+  }
+
   lifecycle {
     ignore_changes = [
       tags,

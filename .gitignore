@@ -38,3 +38,5 @@ override.tf.json
 terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform
+# Terraform dependency lock file (not committed for a reusable module)
+.terraform.lock.hcl

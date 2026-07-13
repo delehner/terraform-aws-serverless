@@ -102,3 +102,15 @@ variable "enable_custom_domain_route53_record" {
   default     = true
   description = "Create the Route53 alias record (api-<env>.<domain> → API GW). Set false when a downstream module owns the public hostname (e.g. CloudFront-fronted edge) and the registry record would collide."
 }
+
+variable "vpc_subnet_ids" {
+  type        = list(string)
+  default     = []
+  description = "Private subnet IDs to run the Lambda inside a VPC (feature flag). Empty (default) keeps the Lambda outside any VPC. Set it — together with vpc_security_group_ids — to reach VPC-only resources such as an RDS/Aurora cluster behind an RDS Proxy."
+}
+
+variable "vpc_security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "Security group IDs attached to the Lambda's VPC ENIs. Required when vpc_subnet_ids is non-empty."
+}
