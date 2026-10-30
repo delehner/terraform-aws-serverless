@@ -9,7 +9,7 @@ Here's a code example of how you can use this module:
 ```hcl
 module "serverless" {
   source  = "app.terraform.io/<organization>/serverless/aws"
-  version = "~> 1.1"
+  version = "~> 1.3"
 
   application_name   = "serverless-boilerplate"
   environment        = "development"
@@ -76,7 +76,7 @@ populated and usable as origins.
 ```hcl
 module "serverless" {
   source  = "app.terraform.io/<organization>/serverless/aws"
-  version = "~> 1.1"
+  version = "~> 1.3"
 
   application_name                    = "serverless-boilerplate"
   environment                         = "staging"
