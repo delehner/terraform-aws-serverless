@@ -1,6 +1,13 @@
 locals {
   nonproduction_domain = "${var.application_name}-${var.environment}.${var.application_domain}"
   production_domain    = "${var.application_name}.${var.application_domain}"
+
+  # Hostname derived from the application name and environment (the behaviour
+  # before custom_domain_name existed).
+  derived_domain = var.environment != "production" ? local.nonproduction_domain : local.production_domain
+
+  # custom_domain_name, when set, replaces the derived hostname.
+  api_domain = var.custom_domain_name != null ? var.custom_domain_name : local.derived_domain
 }
 
 data "aws_route53_zone" "selected" {
@@ -20,12 +27,27 @@ data "aws_acm_certificate" "issued" {
 resource "aws_apigatewayv2_domain_name" "application" {
   count = var.environment == "local" ? 0 : 1
 
-  domain_name = var.environment != "production" ? local.nonproduction_domain : local.production_domain
+  domain_name = local.api_domain
 
   domain_name_configuration {
     certificate_arn = data.aws_acm_certificate.issued[0].arn
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
+  }
+
+  lifecycle {
+    # The certificate is the wildcard *.<application_domain> and the record
+    # goes into the <application_domain> zone, so a custom hostname must be
+    # exactly one label below application_domain. (Checked here and not in the
+    # variable validation because cross-variable validation needs Terraform
+    # >= 1.9.)
+    precondition {
+      condition = var.custom_domain_name == null || (
+        endswith(coalesce(var.custom_domain_name, "-"), ".${var.application_domain}") &&
+        length(split(".", coalesce(var.custom_domain_name, "-"))) == length(split(".", var.application_domain)) + 1
+      )
+      error_message = "custom_domain_name must be a single-level subdomain of application_domain (for example api.<application_domain>), because the module uses the wildcard certificate *.<application_domain>."
+    }
   }
 }
 
@@ -40,7 +62,7 @@ resource "aws_route53_record" "application_without_health_check" {
     region = data.aws_region.current.region
   }
 
-  set_identifier = "${data.aws_region.current.region}-${var.application_name}-${var.environment}.${var.application_domain}"
+  set_identifier = var.custom_domain_name != null ? "${data.aws_region.current.region}-${var.custom_domain_name}" : "${data.aws_region.current.region}-${var.application_name}-${var.environment}.${var.application_domain}"
 
   alias {
     name                   = aws_apigatewayv2_domain_name.application[0].domain_name_configuration[0].target_domain_name
@@ -72,7 +94,7 @@ resource "aws_route53_record" "application_with_health_check" {
     region = data.aws_region.current.region
   }
 
-  set_identifier = var.environment != "production" ? "${data.aws_region.current.region}-${local.nonproduction_domain}" : "${data.aws_region.current.region}-${local.production_domain}"
+  set_identifier = "${data.aws_region.current.region}-${local.api_domain}"
 
   alias {
     name                   = aws_apigatewayv2_domain_name.application[0].domain_name_configuration[0].target_domain_name

@@ -114,3 +114,17 @@ variable "vpc_security_group_ids" {
   default     = []
   description = "Security group IDs attached to the Lambda's VPC ENIs. Required when vpc_subnet_ids is non-empty."
 }
+
+variable "custom_domain_name" {
+  type        = string
+  default     = null
+  description = "Hostname of the API Gateway custom domain (for example api.example.com). Null (default) keeps the derived hostname: <application_name>-<environment>.<application_domain>, or <application_name>.<application_domain> in production. Must be a single-level subdomain of application_domain, because the module uses the wildcard certificate *.<application_domain>. Ignored when environment is \"local\"."
+
+  validation {
+    condition = var.custom_domain_name == null || can(regex(
+      "^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",
+      coalesce(var.custom_domain_name, "-")
+    ))
+    error_message = "custom_domain_name must be null or a lowercase hostname without scheme, path, port, wildcard or trailing dot (for example api.example.com)."
+  }
+}

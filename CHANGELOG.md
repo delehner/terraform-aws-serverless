@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.3.0
+
+### Added
+- New input `custom_domain_name` (default `null` — preserves the current behaviour). When set, it replaces the derived API hostname (`<application_name>-<environment>.<application_domain>`, or `<application_name>.<application_domain>` in production) on the API Gateway custom domain and its Route53 alias record. Use it when the derived hostname is taken, e.g. by the production web app.
+- Validation: `custom_domain_name` must be a lowercase hostname without scheme, path, port, wildcard or trailing dot; a precondition on the custom domain also requires it to be exactly one level below `application_domain`, because the module uses the wildcard certificate `*.<application_domain>` and the `<application_domain>` hosted zone.
+
+### Notes
+- No breaking changes. With `custom_domain_name` unset, the hostname and the Route53 `set_identifier` values are the same as in v1.2.0, so `terraform plan` shows zero diff.
+- Setting `custom_domain_name` on an existing deployment replaces the API Gateway custom domain, its API mapping and the alias record; the old hostname stops resolving.
+- `api_gateway_custom_domain_name` now returns the custom hostname when one is set.
+
 ## v1.2.0
 
 ### Added
