@@ -34,7 +34,7 @@ output "api_gateway_stage_name" {
 }
 
 output "api_gateway_custom_domain_name" {
-  description = "Custom domain hostname configured on the API GW (e.g. api-staging.swrm.ing). Returned even when the Route53 record is disabled — useful as a CloudFront origin if the consumer prefers it over the raw invoke URL."
+  description = "Custom domain hostname configured on the API GW (e.g. api-staging.example.com). Returned even when the Route53 record is disabled — useful as a CloudFront origin if the consumer prefers it over the raw invoke URL."
   value       = try(aws_apigatewayv2_domain_name.application[0].domain_name, null)
 }
 
