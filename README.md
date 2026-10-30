@@ -13,7 +13,7 @@ module "serverless" {
 
   application_name   = "serverless-boilerplate"
   environment        = "development"
-  application_domain = "nexing.com"
+  application_domain = "example.com"
 }
 ```
 
